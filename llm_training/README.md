@@ -177,13 +177,6 @@ WORK_DIR  = "/path/to/your/output"   # where checkpoints, plots, and the final m
 python train_script.py
 ```
 
-It is strongly recommended to run this inside `tmux` since training takes several hours:
-```bash
-tmux new -s training
-python train_script.py 2>&1 | tee training.log
-# detach with Ctrl+B then D; reattach with: tmux attach -t training
-```
-
 ### Outputs
 ```
 output/
@@ -214,23 +207,3 @@ python train_script.py
 
 ---
 
-## Running on a remote server over SSH
-
-If running Stage 3 on a GPU server, keep everything off the root partition and point outputs at a mounted storage volume. Install packages into a local virtual environment to avoid modifying the server:
-
-```bash
-# Create a venv on local disk (NAS mounts may not support symlinks)
-python3 -m venv /tmp/my_venv
-source /tmp/my_venv/bin/activate
-
-# Redirect HF model cache to your storage volume
-export HF_HOME=/your/storage/hf_cache
-export HF_TOKEN=hf_xxxxxxxxxxxxxxxxxxxx
-
-pip install transformers==4.46.3 trl==0.11.4 peft==0.13.2 accelerate==1.0.1 \
-            bitsandbytes datasets scikit-learn joblib pandas numpy matplotlib seaborn torch
-
-# Run inside tmux so training survives SSH disconnects
-tmux new -s training
-python train_script.py 2>&1 | tee training.log
-```
